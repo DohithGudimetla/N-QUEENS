@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>N-Queens Visualizer — Backtracking Algorithm Interactive Solver</title>
+    <meta name="description"
+        content="Watch the N-Queens backtracking algorithm solve the classic chess puzzle step-by-step with cinematic animation and interactive controls.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- ═══════════════ NAVIGATION ═══════════════ -->
+    <nav id="navbar">
+        <div class="nav-inner">
+            <a href="#" class="nav-logo">
+                <span class="logo-icon">♛</span>
+                <span class="logo-text">N-Queens Visualizer</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="#problem" class="nav-link" data-section="problem">Problem</a></li>
+                <li><a href="#algorithm" class="nav-link" data-section="algorithm">Algorithm</a></li>
+                <li><a href="#tryit" class="nav-link" data-section="tryit">Visualization</a></li>
+                <li><a href="#solutions" class="nav-link" data-section="solutions">Solutions</a></li>
+                <li><a href="#tryit" class="nav-link" data-section="tryit">Try It</a></li>
+            </ul>
+            <a href="#tryit" class="nav-cta" id="navRunSolver">
+                <span class="cta-pulse"></span>
+                Run Solver
+            </a>
+            <button class="nav-mobile-toggle" id="mobileToggle" aria-label="Toggle menu">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- ═══════════════ HERO SECTION ═══════════════ -->
+    <section id="hero">
+        <div class="hero-canvas-wrap" id="heroCanvasWrap">
+            <canvas id="heroFrameCanvas"></canvas>
+            <div class="hero-overlay"></div>
+        </div>
+        <div class="hero-content">
+            <div class="hero-badge">
+                <span class="badge-dot"></span>
+                Interactive Algorithm Visualization
+            </div>
+            <h1 class="hero-title">
+                Solve the<br>
+                <span class="hero-highlight">N-Queens</span> Problem
+            </h1>
+            <p class="hero-subtitle">
+                Place N queens on an N×N chessboard so that no two queens attack each other.<br>
+                Watch the backtracking algorithm explore, retreat, and discover solutions.
+            </p>
+            <div class="hero-actions">
+                <a href="#tryit" class="btn btn-primary btn-lg">
+                    <span class="btn-glow"></span>
+                    Start Exploring
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7" />
+                    </svg>
+                </a>
+                <a href="#problem" class="btn btn-ghost btn-lg">
+                    Learn More
+                </a>
+            </div>
+            <div class="hero-stats">
+                <div class="stat">
+                    <span class="stat-value" data-count="92">92</span>
+                    <span class="stat-label">Solutions for 8-Queens</span>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat">
+                    <span class="stat-value">O(N!)</span>
+                    <span class="stat-label">Time Complexity</span>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat">
+                    <span class="stat-value">1848</span>
+                    <span class="stat-label">Year First Proposed</span>
+                </div>
+            </div>
+        </div>
+        <div class="scroll-indicator" id="scrollIndicator">
+            <span>Scroll to explore</span>
+            <div class="scroll-arrow">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 5v14M5 12l7 7 7-7" />
+                </svg>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════ PROBLEM SECTION ═══════════════ -->
+    <section id="problem" class="section">
+        <div class="section-container">
+            <div class="section-header reveal">
+                <span class="section-tag">01 — The Problem</span>
+                <h2 class="section-title">A Classic Puzzle<br>of <span class="text-accent">Constraint
+                        Satisfaction</span></h2>
+                <p class="section-desc">
+                    The N-Queens problem asks: can you place N chess queens on an N×N chessboard
+                    so that no two queens threaten each other? Queens can attack horizontally,
+                    vertically, and diagonally.
+                </p>
+            </div>
+            <div class="problem-grid reveal">
+                <div class="problem-card">
+                    <div class="problem-card-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="1.5">
+                            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+                        </svg>
+                    </div>
+                    <h3>Combinatorial Explosion</h3>
+                    <p>For an 8×8 board, there are 4,426,165,368 ways to place 8 queens. Only 92 are valid solutions.
+                    </p>
+                </div>
+                <div class="problem-card">
+                    <div class="problem-card-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="1.5">
+                            <path
+                                d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22" />
+                        </svg>
+                    </div>
+                    <h3>Historical Significance</h3>
+                    <p>First proposed in 1848 by chess composer Max Bezzel, this problem became foundational in computer
+                        science and AI.</p>
+                </div>
+                <div class="problem-card">
+                    <div class="problem-card-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="1.5">
+                            <circle cx="12" cy="12" r="10" />
+                            <path d="M12 6v6l4 2" />
+                        </svg>
+                    </div>
+                    <h3>Three Constraints</h3>
+                    <p>No two queens may share the same row, column, or diagonal. This creates a deeply interconnected
+                        constraint network.</p>
+                </div>
+            </div>
+            <div class="cinematic-frame-section reveal">
+                <img src="ezgif-74dbd0585478b14e-jpg/ezgif-frame-001.jpg"
+                    alt="N-Queens problem visualization showing queens on a chessboard" class="cinematic-img"
+                    id="problemImage" loading="lazy">
+                <div class="cinematic-caption">
+                    <span class="caption-tag">Visual</span>
+                    8 queens placed on a chessboard with attack paths illuminated
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════ ALGORITHM SECTION ═══════════════ -->
+    <section id="algorithm" class="section section-alt">
+        <div class="section-container">
+            <div class="section-header reveal">
+                <span class="section-tag">02 — The Algorithm</span>
+                <h2 class="section-title">Understanding<br><span class="text-accent">Backtracking</span></h2>
+                <p class="section-desc">
+                    The algorithm explores possibilities and retreats when conflicts appear.
+                    It places queens one row at a time, checking constraints at each step.
+                </p>
+            </div>
+            <div class="algorithm-steps reveal">
+                <div class="algo-step">
+                    <div class="algo-step-num">01</div>
+                    <div class="algo-step-content">
+                        <h3>Place Queen</h3>
+                        <p>Try placing a queen in the first available column of the current row.</p>
+                    </div>
+                    <div class="algo-step-visual">
+                        <img src="ezgif-74dbd0585478b14e-jpg/ezgif-frame-010.jpg" alt="Placing a queen" loading="lazy">
+                    </div>
+                </div>
+                <div class="algo-step">
+                    <div class="algo-step-num">02</div>
+                    <div class="algo-step-content">
+                        <h3>Check Conflicts</h3>
+                        <p>Verify if the placed queen conflicts with any existing queens along rows, columns, or
+                            diagonals.</p>
+                    </div>
+                    <div class="algo-step-visual">
+                        <img src="ezgif-74dbd0585478b14e-jpg/ezgif-frame-080.jpg" alt="Attack lines showing conflicts"
+                            loading="lazy">
+                    </div>
+                </div>
+                <div class="algo-step">
+                    <div class="algo-step-num">03</div>
+                    <div class="algo-step-content">
+                        <h3>Backtrack</h3>
+                        <p>If no valid position exists in the current row, remove the last queen and try the next column
+                            in the previous row.</p>
+                    </div>
+                    <div class="algo-step-visual">
+                        <img src="ezgif-74dbd0585478b14e-jpg/ezgif-frame-130.jpg" alt="Backtracking animation"
+                            loading="lazy">
+                    </div>
+                </div>
+                <div class="algo-step">
+                    <div class="algo-step-num">04</div>
+                    <div class="algo-step-content">
+                        <h3>Solution Found</h3>
+                        <p>When all N queens are placed without conflicts, a valid solution is recorded. Continue
+                            searching for more.</p>
+                    </div>
+                    <div class="algo-step-visual">
+                        <img src="ezgif-74dbd0585478b14e-jpg/ezgif-frame-040.jpg" alt="Solution discovered"
+                            loading="lazy">
+                    </div>
+                </div>
+            </div>
+            <div class="algo-code reveal">
+                <div class="code-header">
+                    <span class="code-dot red"></span>
+                    <span class="code-dot yellow"></span>
+                    <span class="code-dot green"></span>
+                    <span class="code-title">backtrack.pseudo</span>
+                </div>
+                <pre><code><span class="kw">function</span> <span class="fn">solveNQueens</span>(board, row, N):
+    <span class="kw">if</span> row == N:
+        <span class="cm">// All queens placed — solution found!</span>
+        <span class="kw">return</span> <span class="val">true</span>
+    
+    <span class="kw">for</span> col <span class="kw">in</span> <span class="val">0</span> .. N-<span class="val">1</span>:
+        <span class="kw">if</span> <span class="fn">isSafe</span>(board, row, col):
+            board[row] = col      <span class="cm">// Place queen</span>
+            <span class="kw">if</span> <span class="fn">solveNQueens</span>(board, row + <span class="val">1</span>, N):
+                <span class="kw">return</span> <span class="val">true</span>
+            board[row] = -<span class="val">1</span>      <span class="cm">// Backtrack</span>
+    
+    <span class="kw">return</span> <span class="val">false</span>           <span class="cm">// No valid placement</span></code></pre>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════ VISUALIZATION / TRY IT SECTION ═══════════════ -->
+    <section id="tryit" class="section">
+        <div class="section-container">
+            <div class="section-header reveal">
+                <span class="section-tag">03 — Interactive Solver</span>
+                <h2 class="section-title">Watch the Algorithm<br><span class="text-accent">Think</span></h2>
+                <p class="section-desc">
+                    Set the board size, press start, and watch the backtracking algorithm
+                    explore possibilities in real time.
+                </p>
+            </div>
+
+            <div class="solver-wrapper reveal">
+                <!-- Controls Panel -->
+                <div class="solver-controls">
+                    <div class="control-group">
+                        <label class="control-label" for="queenCount">Number of Queens (N)</label>
+                        <div class="input-row">
+                            <button class="btn-icon" id="btnDecN" aria-label="Decrease N">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <path d="M5 12h14" />
+                                </svg>
+                            </button>
+                            <input type="number" id="queenCount" class="input-field" value="8" min="1" max="12">
+                            <button class="btn-icon" id="btnIncN" aria-label="Increase N">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <path d="M12 5v14M5 12h14" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label class="control-label">Animation Speed</label>
+                        <div class="speed-control">
+                            <span class="speed-label">Slow</span>
+                            <input type="range" id="speedSlider" class="slider" min="1" max="100" value="50">
+                            <span class="speed-label">Fast</span>
+                        </div>
+                    </div>
+
+                    <div class="control-group control-buttons">
+                        <button class="btn btn-primary" id="btnStart">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <polygon points="5,3 19,12 5,21" />
+                            </svg>
+                            Start Visualization
+                        </button>
+                        <button class="btn btn-secondary" id="btnPause" disabled>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <rect x="6" y="4" width="4" height="16" />
+                                <rect x="14" y="4" width="4" height="16" />
+                            </svg>
+                            Pause
+                        </button>
+                        <button class="btn btn-ghost" id="btnReset">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <polyline points="1 4 1 10 7 10" />
+                                <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" />
+                            </svg>
+                            Reset
+                        </button>
+                    </div>
+
+                    <div class="control-divider"></div>
+
+                    <div class="solver-stats">
+                        <div class="stat-row">
+                            <span class="stat-key">Status</span>
+                            <span class="stat-val" id="statStatus">Ready</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-key">Steps</span>
+                            <span class="stat-val" id="statSteps">0</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-key">Solutions Found</span>
+                            <span class="stat-val" id="statSolutions">0</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-key">Backtracks</span>
+                            <span class="stat-val" id="statBacktracks">0</span>
+                        </div>
+                    </div>
+
+                    <div class="control-divider"></div>
+
+                    <div class="control-group">
+                        <button class="btn btn-accent" id="btnNextSolution" disabled>
+                            Next Solution
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M5 12h14M12 5l7 7-7 7" />
+                            </svg>
+                        </button>
+                        <div class="solution-nav" id="solutionNav" style="display:none;">
+                            <button class="btn-icon btn-sm" id="btnPrevSol" aria-label="Previous solution">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <path d="M19 12H5M12 19l-7-7 7-7" />
+                                </svg>
+                            </button>
+                            <span class="solution-counter" id="solutionCounter">1 / 1</span>
+                            <button class="btn-icon btn-sm" id="btnNextSol" aria-label="Next solution">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <path d="M5 12h14M12 5l7 7-7 7" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chessboard Canvas -->
+                <div class="solver-board" id="solverBoard">
+                    <canvas id="chessCanvas"></canvas>
+                    <div class="board-glow" id="boardGlow"></div>
+                    <div class="board-status-overlay" id="boardOverlay">
+                        <div class="overlay-content">
+                            <span class="overlay-icon">♛</span>
+                            <span class="overlay-text">Press Start to begin</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════ SOLUTIONS GALLERY ═══════════════ -->
+    <section id="solutions" class="section section-alt">
+        <div class="section-container">
+            <div class="section-header reveal">
+                <span class="section-tag">04 — Solutions</span>
+                <h2 class="section-title">All Valid<br><span class="text-accent">Configurations</span></h2>
+                <p class="section-desc">
+                    Browse every valid solution the algorithm discovered. Click any board to see it animate.
+                </p>
+            </div>
+            <div class="solutions-grid" id="solutionsGrid">
+                <!-- Solutions are populated by JS -->
+                <div class="solutions-placeholder" id="solutionsPlaceholder">
+                    <span class="placeholder-icon">♛</span>
+                    <p>Run the solver to discover solutions</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════ FOOTER ═══════════════ -->
+    <footer id="footer">
+        <div class="footer-inner">
+            <div class="footer-left">
+                <span class="logo-icon">♛</span>
+                <span>N-Queens Visualizer</span>
+            </div>
+            <p class="footer-text">A beautiful visualization of computational thinking</p>
+            <p class="footer-copy">&copy; 2026 — Built with mathematics, algorithms & a love for elegant code</p>
+        </div>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
